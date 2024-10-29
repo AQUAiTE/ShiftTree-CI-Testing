@@ -1,27 +1,59 @@
-name: Playwright Tests
+name: ShiftTree CI/CD With Playwright
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 30
+
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm install -g pnpm && pnpm install
-    - name: Install Playwright Browsers
-      run: pnpm exec playwright install --with-deps
-    - name: Run Playwright tests
-      run: pnpm exec playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      # Checkout a branch for runner to exec workflow
+      - uses: actions/checkout@v4
+      # Setup node env using version 18 (can change to lts)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      # Runner needs to install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Next steps are to mimic our usual startup process (pnpm i, pnpm dev, docker)
+      - name: Install Server Dependencies
+        run: pnpm i
+        working-directory: ./server
+      - name: Build Server
+        run: pnpm build
+        working-directory: ./server
+      - name: Install Client Dependencies
+        run: pnpm i
+        working-directory: ./client
+      - name: Build Client
+        run: pnpm build
+        working-directory: ./client
+      - name: Destroy Old Docker Containers
+        run: docker compose down -v
+      - name: Start Docker Containers
+        run: docker compose up -d
+
+      # Install and run Playwright's Browsers (PLACEHOLDER until we have real tests)
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+
+      # For review
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      # Docker cleanup
+      - name: Stop Docker Containers
+        run: docker compose down -v
