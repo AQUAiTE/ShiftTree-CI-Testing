@@ -21,7 +21,15 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # Check formatting before starting any runs
+      # Next steps are to mimic our usual startup process (pnpm i, pnpm dev, docker)
+      - name: Install Server Dependencies
+        run: pnpm i
+        working-directory: ./server
+      - name: Install Client Dependencies
+        run: pnpm i
+        working-directory: ./client
+
+      # Check formatting before building
       - name: Check Client Code Formatting
         run: pnpm run check
         working-directory: ./client
@@ -29,16 +37,10 @@ jobs:
         run: pnpm run check
         working-directory: ./server
 
-      # Next steps are to mimic our usual startup process (pnpm i, pnpm dev, docker)
-      - name: Install Server Dependencies
-        run: pnpm i
-        working-directory: ./server
+      # Build
       - name: Build Server
         run: pnpm build
         working-directory: ./server
-      - name: Install Client Dependencies
-        run: pnpm i
-        working-directory: ./client
       - name: Build Client
         run: pnpm build
         working-directory: ./client
