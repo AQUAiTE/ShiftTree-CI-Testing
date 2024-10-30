@@ -49,12 +49,6 @@ jobs:
       - name: Start Docker Containers
         run: docker compose up -d
 
-      # Install and run playwright tests (PLACEHOLDER until we have real tests)
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-      - name: Run Playwright tests
-        run: pnpm exec playwright test
-
       # For review
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
