@@ -37,7 +37,7 @@ jobs:
         run: pnpm run check
         working-directory: ./server
 
-      # Build
+      # Build server, client, and docker
       - name: Build Server
         run: pnpm build
         working-directory: ./server
@@ -49,7 +49,7 @@ jobs:
       - name: Start Docker Containers
         run: docker compose up -d
 
-      # Install and run Playwright's Browsers (PLACEHOLDER until we have real tests)
+      # Install and run playwright tests (PLACEHOLDER until we have real tests)
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
